@@ -1414,6 +1414,69 @@ test('can use ClientRequest using GET', t => {
   req.end()
 })
 
+test('can use ClientRequest using GET with url', t => {
+  let dataCalled = false
+
+  const scope = nock('http://example.test')
+    .get('/dsad')
+    .reply(202, 'HEHE!')
+
+  const req = new http.ClientRequest('http://example.test/dsad')
+  req.end()
+
+  req.on('response', function(res) {
+    t.equal(res.statusCode, 202)
+    res.on('end', function() {
+      t.ok(dataCalled, 'data event was called')
+      scope.done()
+      t.end()
+    })
+    res.on('data', function(data) {
+      dataCalled = true
+      t.ok(data instanceof Buffer, 'data should be buffer')
+      t.equal(data.toString(), 'HEHE!', 'response should match')
+    })
+  })
+
+  req.end()
+})
+
+test('can use ClientRequest using GET with url and options', t => {
+  let dataCalled = false
+
+  const scope = nock('http://example.test', {
+    reqheaders: {
+      'X-My-Super-Power': /Awesome/i,
+    },
+  })
+    .get('/dsad')
+    .reply(202, 'HEHE!')
+
+  const req = new http.ClientRequest('http://example.test/dsad', {
+    method: 'GET',
+    headers: {
+      'X-My-Super-Power': /Awesome/i,
+    },
+  })
+  req.end()
+
+  req.on('response', function(res) {
+    t.equal(res.statusCode, 202)
+    res.on('end', function() {
+      t.ok(dataCalled, 'data event was called')
+      scope.done()
+      t.end()
+    })
+    res.on('data', function(data) {
+      dataCalled = true
+      t.ok(data instanceof Buffer, 'data should be buffer')
+      t.equal(data.toString(), 'HEHE!', 'response should match')
+    })
+  })
+
+  req.end()
+})
+
 // This test seems to need `http`.
 test('can use ClientRequest using POST', t => {
   let dataCalled = false
