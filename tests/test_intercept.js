@@ -1226,7 +1226,9 @@ test('can use ClientRequest using GET', t => {
 test('can use ClientRequest using GET ipv6 url', t => {
   let dataCalled = false
 
-  const scope = nock('http://[1080::8:800:200C:417A]')
+  const scope = nock('http://[1080::8:800:200C:417A]', {
+    legacy: false,
+  })
     .get('/foo')
     .reply(202, 'HEHE!')
 
@@ -1284,10 +1286,10 @@ test('can use ClientRequest using POST', t => {
 })
 
 test('http.request works with ClientRequest Node >=10.9', t => {
-  process.env.NOCK = 2
   let dataCalled = false
 
   const scope = nock('http://username:password@example.test:3414', {
+    legacy: false,
     reqheaders: {
       'X-My-Super-Power': /Awesome/i,
     },
@@ -1324,6 +1326,7 @@ test('http.get works with URL and options', t => {
   let dataCalled = false
 
   const scope = nock('http://username:password@example.test:3414', {
+    legacy: false,
     reqheaders: {
       'X-My-Super-Power': /Awesome/i,
     },
